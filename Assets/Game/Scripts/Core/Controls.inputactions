@@ -14,6 +14,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "Interact",
+                    "type": "Button",
+                    "id": "7362db73-a600-4f7f-8cfc-4e4c36b23759",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -25,6 +34,45 @@
                     "processors": "",
                     "groups": "",
                     "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8b35a9cd-419d-4e49-8b41-c1905f097035",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Interact",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Peephole",
+            "id": "594a1a3d-8d42-478d-8e99-009ee8b669ad",
+            "actions": [
+                {
+                    "name": "Exit",
+                    "type": "Button",
+                    "id": "5689f0bd-55dc-4ffc-9a16-c1d8f873a2e7",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "dae16a9a-6e18-461f-aad6-84f6a1d9d9ee",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Exit",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

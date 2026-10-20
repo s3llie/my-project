@@ -100,6 +100,15 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Interact"",
+                    ""type"": ""Button"",
+                    ""id"": ""7362db73-a600-4f7f-8cfc-4e4c36b23759"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -113,6 +122,45 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8b35a9cd-419d-4e49-8b41-c1905f097035"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Interact"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
+            ""name"": ""Peephole"",
+            ""id"": ""594a1a3d-8d42-478d-8e99-009ee8b669ad"",
+            ""actions"": [
+                {
+                    ""name"": ""Exit"",
+                    ""type"": ""Button"",
+                    ""id"": ""5689f0bd-55dc-4ffc-9a16-c1d8f873a2e7"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""dae16a9a-6e18-461f-aad6-84f6a1d9d9ee"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Exit"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -122,11 +170,16 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         // Player
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
         m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
+        m_Player_Interact = m_Player.FindAction("Interact", throwIfNotFound: true);
+        // Peephole
+        m_Peephole = asset.FindActionMap("Peephole", throwIfNotFound: true);
+        m_Peephole_Exit = m_Peephole.FindAction("Exit", throwIfNotFound: true);
     }
 
     ~@Controls()
     {
         UnityEngine.Debug.Assert(!m_Player.enabled, "This will cause a leak and performance issues, Controls.Player.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_Peephole.enabled, "This will cause a leak and performance issues, Controls.Peephole.Disable() has not been called.");
     }
 
     /// <summary>
@@ -203,6 +256,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_Player;
     private List<IPlayerActions> m_PlayerActionsCallbackInterfaces = new List<IPlayerActions>();
     private readonly InputAction m_Player_Move;
+    private readonly InputAction m_Player_Interact;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -218,6 +272,10 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/Move".
         /// </summary>
         public InputAction @Move => m_Wrapper.m_Player_Move;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Interact".
+        /// </summary>
+        public InputAction @Interact => m_Wrapper.m_Player_Interact;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -247,6 +305,9 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @Move.started += instance.OnMove;
             @Move.performed += instance.OnMove;
             @Move.canceled += instance.OnMove;
+            @Interact.started += instance.OnInteract;
+            @Interact.performed += instance.OnInteract;
+            @Interact.canceled += instance.OnInteract;
         }
 
         /// <summary>
@@ -261,6 +322,9 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @Move.started -= instance.OnMove;
             @Move.performed -= instance.OnMove;
             @Move.canceled -= instance.OnMove;
+            @Interact.started -= instance.OnInteract;
+            @Interact.performed -= instance.OnInteract;
+            @Interact.canceled -= instance.OnInteract;
         }
 
         /// <summary>
@@ -294,6 +358,102 @@ public partial class @Controls: IInputActionCollection2, IDisposable
     /// Provides a new <see cref="PlayerActions" /> instance referencing this action map.
     /// </summary>
     public PlayerActions @Player => new PlayerActions(this);
+
+    // Peephole
+    private readonly InputActionMap m_Peephole;
+    private List<IPeepholeActions> m_PeepholeActionsCallbackInterfaces = new List<IPeepholeActions>();
+    private readonly InputAction m_Peephole_Exit;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "Peephole".
+    /// </summary>
+    public struct PeepholeActions
+    {
+        private @Controls m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public PeepholeActions(@Controls wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "Peephole/Exit".
+        /// </summary>
+        public InputAction @Exit => m_Wrapper.m_Peephole_Exit;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_Peephole; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="PeepholeActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(PeepholeActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="PeepholeActions" />
+        public void AddCallbacks(IPeepholeActions instance)
+        {
+            if (instance == null || m_Wrapper.m_PeepholeActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_PeepholeActionsCallbackInterfaces.Add(instance);
+            @Exit.started += instance.OnExit;
+            @Exit.performed += instance.OnExit;
+            @Exit.canceled += instance.OnExit;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="PeepholeActions" />
+        private void UnregisterCallbacks(IPeepholeActions instance)
+        {
+            @Exit.started -= instance.OnExit;
+            @Exit.performed -= instance.OnExit;
+            @Exit.canceled -= instance.OnExit;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="PeepholeActions.UnregisterCallbacks(IPeepholeActions)" />.
+        /// </summary>
+        /// <seealso cref="PeepholeActions.UnregisterCallbacks(IPeepholeActions)" />
+        public void RemoveCallbacks(IPeepholeActions instance)
+        {
+            if (m_Wrapper.m_PeepholeActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="PeepholeActions.AddCallbacks(IPeepholeActions)" />
+        /// <seealso cref="PeepholeActions.RemoveCallbacks(IPeepholeActions)" />
+        /// <seealso cref="PeepholeActions.UnregisterCallbacks(IPeepholeActions)" />
+        public void SetCallbacks(IPeepholeActions instance)
+        {
+            foreach (var item in m_Wrapper.m_PeepholeActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_PeepholeActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="PeepholeActions" /> instance referencing this action map.
+    /// </summary>
+    public PeepholeActions @Peephole => new PeepholeActions(this);
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Player" which allows adding and removing callbacks.
     /// </summary>
@@ -308,5 +468,27 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnMove(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Interact" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnInteract(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Peephole" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="PeepholeActions.AddCallbacks(IPeepholeActions)" />
+    /// <seealso cref="PeepholeActions.RemoveCallbacks(IPeepholeActions)" />
+    public interface IPeepholeActions
+    {
+        /// <summary>
+        /// Method invoked when associated input action "Exit" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnExit(InputAction.CallbackContext context);
     }
 }
