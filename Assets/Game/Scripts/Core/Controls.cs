@@ -227,6 +227,76 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Radio"",
+            ""id"": ""1a5100ad-863e-4f90-85ef-14c60108ad1a"",
+            ""actions"": [
+                {
+                    ""name"": ""Tune"",
+                    ""type"": ""Value"",
+                    ""id"": ""ed65ad0f-21a2-4f86-b2d7-4890e3821603"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""ExitRadio"",
+                    ""type"": ""Button"",
+                    ""id"": ""7d03aa83-8249-435a-ac40-4ca7fe4a83e9"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": ""1D Axis"",
+                    ""id"": ""d0fd92ac-99df-4c45-9ab0-00cae0551066"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Tune"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""b872e391-eae6-4dec-bf00-7ac7da750672"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Tune"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""15929273-2a3a-46c6-b8bb-db92cdfac63a"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Tune"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ac148b90-0238-4722-858c-8d7261b106d3"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ExitRadio"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -239,12 +309,17 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         // Peephole
         m_Peephole = asset.FindActionMap("Peephole", throwIfNotFound: true);
         m_Peephole_Exit = m_Peephole.FindAction("Exit", throwIfNotFound: true);
+        // Radio
+        m_Radio = asset.FindActionMap("Radio", throwIfNotFound: true);
+        m_Radio_Tune = m_Radio.FindAction("Tune", throwIfNotFound: true);
+        m_Radio_ExitRadio = m_Radio.FindAction("ExitRadio", throwIfNotFound: true);
     }
 
     ~@Controls()
     {
         UnityEngine.Debug.Assert(!m_Player.enabled, "This will cause a leak and performance issues, Controls.Player.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_Peephole.enabled, "This will cause a leak and performance issues, Controls.Peephole.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_Radio.enabled, "This will cause a leak and performance issues, Controls.Radio.Disable() has not been called.");
     }
 
     /// <summary>
@@ -530,6 +605,113 @@ public partial class @Controls: IInputActionCollection2, IDisposable
     /// Provides a new <see cref="PeepholeActions" /> instance referencing this action map.
     /// </summary>
     public PeepholeActions @Peephole => new PeepholeActions(this);
+
+    // Radio
+    private readonly InputActionMap m_Radio;
+    private List<IRadioActions> m_RadioActionsCallbackInterfaces = new List<IRadioActions>();
+    private readonly InputAction m_Radio_Tune;
+    private readonly InputAction m_Radio_ExitRadio;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "Radio".
+    /// </summary>
+    public struct RadioActions
+    {
+        private @Controls m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public RadioActions(@Controls wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "Radio/Tune".
+        /// </summary>
+        public InputAction @Tune => m_Wrapper.m_Radio_Tune;
+        /// <summary>
+        /// Provides access to the underlying input action "Radio/ExitRadio".
+        /// </summary>
+        public InputAction @ExitRadio => m_Wrapper.m_Radio_ExitRadio;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_Radio; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="RadioActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(RadioActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="RadioActions" />
+        public void AddCallbacks(IRadioActions instance)
+        {
+            if (instance == null || m_Wrapper.m_RadioActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_RadioActionsCallbackInterfaces.Add(instance);
+            @Tune.started += instance.OnTune;
+            @Tune.performed += instance.OnTune;
+            @Tune.canceled += instance.OnTune;
+            @ExitRadio.started += instance.OnExitRadio;
+            @ExitRadio.performed += instance.OnExitRadio;
+            @ExitRadio.canceled += instance.OnExitRadio;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="RadioActions" />
+        private void UnregisterCallbacks(IRadioActions instance)
+        {
+            @Tune.started -= instance.OnTune;
+            @Tune.performed -= instance.OnTune;
+            @Tune.canceled -= instance.OnTune;
+            @ExitRadio.started -= instance.OnExitRadio;
+            @ExitRadio.performed -= instance.OnExitRadio;
+            @ExitRadio.canceled -= instance.OnExitRadio;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="RadioActions.UnregisterCallbacks(IRadioActions)" />.
+        /// </summary>
+        /// <seealso cref="RadioActions.UnregisterCallbacks(IRadioActions)" />
+        public void RemoveCallbacks(IRadioActions instance)
+        {
+            if (m_Wrapper.m_RadioActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="RadioActions.AddCallbacks(IRadioActions)" />
+        /// <seealso cref="RadioActions.RemoveCallbacks(IRadioActions)" />
+        /// <seealso cref="RadioActions.UnregisterCallbacks(IRadioActions)" />
+        public void SetCallbacks(IRadioActions instance)
+        {
+            foreach (var item in m_Wrapper.m_RadioActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_RadioActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="RadioActions" /> instance referencing this action map.
+    /// </summary>
+    public RadioActions @Radio => new RadioActions(this);
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Player" which allows adding and removing callbacks.
     /// </summary>
@@ -573,5 +755,27 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnExit(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Radio" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="RadioActions.AddCallbacks(IRadioActions)" />
+    /// <seealso cref="RadioActions.RemoveCallbacks(IRadioActions)" />
+    public interface IRadioActions
+    {
+        /// <summary>
+        /// Method invoked when associated input action "Tune" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnTune(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ExitRadio" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnExitRadio(InputAction.CallbackContext context);
     }
 }

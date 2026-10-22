@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-using Zenject; // Не забываем юзинг!
+using Zenject;
+using System.Collections;
 
 public class PeepholeController : MonoBehaviour
 {
@@ -48,9 +49,19 @@ public class PeepholeController : MonoBehaviour
         Ray ray = playerMainCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
         RaycastHit hit;
 
-        if (Physics.Raycast(ray, out hit, 3f) && hit.collider.CompareTag("Door"))
+        if (Physics.Raycast(ray, out hit, 3f)) // Дистанция 3 метра
         {
-            EnterPeepholeMode();
+            // Если посмотрели на дверь — включаем 2D глазок
+            if (hit.collider.CompareTag("Door"))
+            {
+                EnterPeepholeMode();
+            }
+            // Если посмотрели на радио — включаем режим радиоприемника!
+            else if (hit.collider.CompareTag("Radio"))
+            {
+                RadioController radio = hit.collider.GetComponent<RadioController>();
+                if (radio != null) radio.InteractWithRadio();
+            }
         }
     }
 
@@ -64,22 +75,28 @@ public class PeepholeController : MonoBehaviour
         if (_playerMovement != null) _playerMovement.ToggleControls(false);
         if (peepholeCanvas != null) peepholeCanvas.SetActive(true); // Просто выводим чистую 2D-картинку
 
-        // Временно оставляем триггер переключения часа для теста
-        if (_fxService != null) _fxService.AdvanceStoryHorror();
-
         _inputActions.Player.Disable();
         _inputActions.Peephole.Enable();
     }
 
-    private void ExitPeepholeMode()
-    {
-        if (peepholeCanvas != null) peepholeCanvas.SetActive(false);
-        if (_playerMovement != null) _playerMovement.ToggleControls(true);
 
-        // Ничего не сбрасываем, мир просто плавно продолжает меняться по сюжету!
-        _inputActions.Peephole.Disable();
-        _inputActions.Player.Enable();
-    }
+private void ExitPeepholeMode()
+{
+    if (peepholeCanvas != null) peepholeCanvas.SetActive(false);
+    if (_playerMovement != null) _playerMovement.ToggleControls(true);
 
+    _inputActions.Peephole.Disable();
+    _inputActions.Player.Enable();
 
+    StartCoroutine(LockCursorNextFrame());
+    Debug.Log("Вернулись в 3D-комнату.");
+}
+     
+private IEnumerator LockCursorNextFrame()
+ {
+    yield return null; 
+    
+     Cursor.lockState = CursorLockMode.Locked;
+     Cursor.visible = false;
+ }
 }

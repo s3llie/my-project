@@ -141,6 +141,76 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "Radio",
+            "id": "1a5100ad-863e-4f90-85ef-14c60108ad1a",
+            "actions": [
+                {
+                    "name": "Tune",
+                    "type": "Value",
+                    "id": "ed65ad0f-21a2-4f86-b2d7-4890e3821603",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "ExitRadio",
+                    "type": "Button",
+                    "id": "7d03aa83-8249-435a-ac40-4ca7fe4a83e9",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "1D Axis",
+                    "id": "d0fd92ac-99df-4c45-9ab0-00cae0551066",
+                    "path": "1DAxis",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Tune",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "negative",
+                    "id": "b872e391-eae6-4dec-bf00-7ac7da750672",
+                    "path": "<Keyboard>/a",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Tune",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "positive",
+                    "id": "15929273-2a3a-46c6-b8bb-db92cdfac63a",
+                    "path": "<Keyboard>/d",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Tune",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "ac148b90-0238-4722-858c-8d7261b106d3",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ExitRadio",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": []
