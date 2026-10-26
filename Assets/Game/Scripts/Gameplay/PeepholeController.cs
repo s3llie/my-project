@@ -12,10 +12,8 @@ public class PeepholeController : MonoBehaviour
     private Controls _inputActions;
     private PlayerMovement _playerMovement;
 
-    // Сюда Zenject автоматически прокинет наш сервис эффектов!
     private VisualEffectsService _fxService;
 
-    // Конструктор внедрения зависимостей Zenject
     [Inject]
     public void Construct(VisualEffectsService fxService)
     {
@@ -49,14 +47,12 @@ public class PeepholeController : MonoBehaviour
         Ray ray = playerMainCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
         RaycastHit hit;
 
-        if (Physics.Raycast(ray, out hit, 3f)) // Дистанция 3 метра
+        if (Physics.Raycast(ray, out hit, 3f)) 
         {
-            // Если посмотрели на дверь — включаем 2D глазок
             if (hit.collider.CompareTag("Door"))
             {
                 EnterPeepholeMode();
             }
-            // Если посмотрели на радио — включаем режим радиоприемника!
             else if (hit.collider.CompareTag("Radio"))
             {
                 RadioController radio = hit.collider.GetComponent<RadioController>();
@@ -73,8 +69,7 @@ public class PeepholeController : MonoBehaviour
     private void EnterPeepholeMode()
     {
         if (_playerMovement != null) _playerMovement.ToggleControls(false);
-        if (peepholeCanvas != null) peepholeCanvas.SetActive(true); // Просто выводим чистую 2D-картинку
-
+        if (peepholeCanvas != null) peepholeCanvas.SetActive(true); 
         _inputActions.Player.Disable();
         _inputActions.Peephole.Enable();
     }

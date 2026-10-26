@@ -1,6 +1,5 @@
 using UnityEngine;
-using UnityEngine.Rendering.PostProcessing; // Если URP, смени на: using UnityEngine.Rendering;
-
+using UnityEngine.Rendering.PostProcessing;
 public class VisualEffectsService : MonoBehaviour
 {
     [System.Serializable]
@@ -13,16 +12,15 @@ public class VisualEffectsService : MonoBehaviour
 
     [Header("Настройки эффектов по главам/часам")]
     [SerializeField] private HorrorPreset[] storySteps;
-    [SerializeField] private float changeSpeed = 0.5f; // Скорость смены атмосферы
+    [SerializeField] private float changeSpeed = 0.5f; 
 
     private PostProcessVolume _volume;
     private Grain _grainLayer;
     private Vignette _vignetteLayer;
-    private ColorGrading _colorGradingLayer; // Для URP: ColorAdjustments
+    private ColorGrading _colorGradingLayer; 
 
     private int _currentStep = 0;
 
-    // Целевые значения, к которым мы плавно идем
     private float _targetGrain;
     private float _targetVignette;
     private Color _targetColor;
@@ -50,29 +48,24 @@ public class VisualEffectsService : MonoBehaviour
 
     private void Update()
     {
-        // Плавно двигаем зернистость
         if (_grainLayer != null)
             _grainLayer.intensity.value = Mathf.MoveTowards(_grainLayer.intensity.value, _targetGrain, Time.deltaTime * changeSpeed);
 
-        // Плавно двигаем виньетку
         if (_vignetteLayer != null)
             _vignetteLayer.intensity.value = Mathf.MoveTowards(_vignetteLayer.intensity.value, _targetVignette, Time.deltaTime * changeSpeed);
 
-        // ПЛАВНО переливаем цвета (исправляет застревание зеленого цвета!)
         if (_colorGradingLayer != null)
         {
             _colorGradingLayer.colorFilter.value = Color.Lerp(_colorGradingLayer.colorFilter.value, _targetColor, Time.deltaTime * changeSpeed * 2f);
         }
     }
 
-    // Главный метод продвижения сюжета (переключения часов)
     public void AdvanceStoryHorror()
     {
         if (_currentStep + 1 < storySteps.Length)
         {
             _currentStep++;
 
-            // Задаем новые цели для плавного перехода в Update
             _targetGrain = storySteps[_currentStep].grainIntensity;
             _targetVignette = storySteps[_currentStep].vignetteIntensity;
             _targetColor = storySteps[_currentStep].colorFilter;

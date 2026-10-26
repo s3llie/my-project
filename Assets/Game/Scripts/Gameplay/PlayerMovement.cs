@@ -89,11 +89,11 @@ public class PlayerMovement : MonoBehaviour
 
     public void ToggleControls(bool isEnabled)
     {
-        this.enabled = isEnabled; // Выключает Update скрипта ходьбы
+        this.enabled = isEnabled; 
         if (isEnabled)
-            _inputActions.Player.Enable(); // Включает карту ходьбы обратно
+            _inputActions.Player.Enable(); 
         else
-            _inputActions.Player.Disable(); // Выключает карту ходьбы, когда подошли к радио
+            _inputActions.Player.Disable(); 
 
         if (isEnabled)
         {
